@@ -9,7 +9,7 @@ public class MainFrame extends JFrame implements Runnable {
     public MainFrame(String display) {
         super(display);
         int frameWidth = 1000;
-        int frameHeight = 800;
+        int frameHeight = 1000;
         p = new DrawPanel();
         infolabel = new JLabel("SATSATSATSATIIIIIIIIII");
         this.add(p);

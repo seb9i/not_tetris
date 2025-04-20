@@ -1,4 +1,6 @@
+import Bricks.Brick;
 import Bricks.BrickLayout;
+import org.w3c.dom.ls.LSOutput;
 
 import java.awt.*;
 import java.awt.event.MouseListener;
@@ -7,12 +9,15 @@ import javax.swing.JPanel;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class DrawPanel extends JPanel implements MouseListener {
 
     private boolean[][] grid;
     private int[][] brickGrid;
     private int[][] brickGrid2;
+
+
     private long start;
     BrickLayout b;
     int index;
@@ -24,29 +29,9 @@ public class DrawPanel extends JPanel implements MouseListener {
         b = new BrickLayout("src/Bricks/bricks.txt", 40, true );
         brickGrid = b.brickLayout;
         brickGrid2 = new int[30][40];
-    }
-//    public void randomizeGrid(){
-//        for (int i = 0; i < grid.length; i++){
-//            for (int j = 0; j < grid[i].length; j++){
-//                grid[i][j] = false;
-//            }
-//        }
-//        for (int i = 0; i < grid.length; i++){
-//            for (int j = 0; j < grid[i].length; j++){
-//                int chance = (int)(Math.random() * 9) + 1;
-//                if (chance < 3){
-//                    grid[i][j] = true;
-//                }
-//            }
-//        }
-//    }
+        index = 0;
 
-    public void nextStep(){
-        b.doOneBrick();
-        index -= 1;
-        System.out.println(Arrays.toString(brickGrid2));
     }
-
 
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -54,24 +39,43 @@ public class DrawPanel extends JPanel implements MouseListener {
         for (int j = 0; j < 30; j++){
             for (int i = 0; i < 40; i++){
                 g.drawRect(10 + (i * 24), 10 + (j * 28), 20, 20);
-                if (brickGrid[j][i] == 1){
-                    g2.setColor(Color.RED);
+                if (brickGrid2[j][i] == 1 || brickGrid2[j][i] == 2){
+                    g2.setColor(Color.BLUE);
                     g2.fillRect(10 + (i * 24), 10 + (j * 28), 20, 20);
                     g2.setColor(Color.BLACK);
                 }
             }
         }
-//        if (System.currentTimeMillis() > (start + 3000)){
-//            randomizeGrid();
-//            start = System.currentTimeMillis();
-//        }
+        if (System.currentTimeMillis() > (start + 159)){
+            brickGrid2[0] = b.brickLayout2[29];
+            for (int j = 29; j >= 0; j--) { // start from second-to-last row
+                for (int col = 0; col < brickGrid2[j].length; col++) {
+                    if (brickGrid2[j][col] == 1){
+                        int currentIteration = index - j;
+                        if (((( b.brickHeight.get(currentIteration - 1) - 1) == j))){
+                            System.out.println(currentIteration + " brick hit its spot" + col);
+                            brickGrid2[j][col] = 2;
+                            continue;
+                        }
+                        else {
+
+                            brickGrid2[j + 1][col] = brickGrid2[j][col];
+                            brickGrid2[j][col] = 0;
+                        }
+                    }
 
 
-    }
+                }
+            }
+            start = System.currentTimeMillis();
+            index += 1;
+            b.oneBrick();
+        }
+
+}
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        nextStep();
     }
 
     @Override
@@ -86,11 +90,11 @@ public class DrawPanel extends JPanel implements MouseListener {
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        System.out.println("HELLO!");
+
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        System.out.println("GOODBYE!");
+
     }
 }

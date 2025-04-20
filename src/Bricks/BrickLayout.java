@@ -8,12 +8,17 @@ import java.util.Scanner;
 
 public class BrickLayout {
 
-    private ArrayList<Brick> bricks;
+    public ArrayList<Brick> bricks;
+    public ArrayList<Brick> brickst;
+    public ArrayList<Integer> brickHeight;
     public int[][] brickLayout;
+    public int[][] brickLayout2;
     boolean first;
     public BrickLayout(String fileName, int cols, boolean dropAllBricks) {
+
         ArrayList<String> fileData = getFileData(fileName);
         bricks = new ArrayList<Brick>();
+        brickHeight = new ArrayList<Integer>();
         for (String line : fileData) {
             String[] points = line.split(",");
             int start = Integer.parseInt(points[0]);
@@ -22,6 +27,17 @@ public class BrickLayout {
             bricks.add(b);
         }
         brickLayout = new int[30][cols];
+        brickLayout2 = new int[30][cols];
+
+        brickst = (ArrayList)bricks.clone();
+
+        if (dropAllBricks) {
+            while (bricks.size() != 0) {
+                doOneBrick();
+            }
+        }
+        updateBricks();
+
 
 
     }
@@ -34,6 +50,11 @@ public class BrickLayout {
             }
         }
         return brickLayout.length;
+    }
+    public void updateBricks() {
+        for (int i = 0; i < brickHeight.size(); i++){
+            brickst.get(i).setHeight(25 );
+        }
     }
     public int findthi(Brick b){
         ArrayList<Integer> fs = new ArrayList<Integer>();
@@ -53,10 +74,22 @@ public class BrickLayout {
         if (bricks.size() != 0) {
             Brick b = bricks.remove(0);
             b.setHeight(findthi(b));
+            brickHeight.add(b.getHeight());
             for (int i = b.getStart(); i < b.getEnd() + 1; i++){
                 brickLayout[b.getHeight() - 1][i] = 1;
             }
 
+        }
+    }
+
+    public void oneBrick(){
+        if (brickst.size() != 0) {
+            Brick b = brickst.remove(0);
+            b.setHeight(findthi(b));
+            brickHeight.add(b.getHeight() - 1);
+            for (int i = b.getStart(); i < b.getEnd() + 1; i++){
+                brickLayout2[29][i] = 1;
+            }
         }
     }
 
